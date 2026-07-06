@@ -2872,6 +2872,11 @@ input, select, textarea {
 						border-top: 0;
 					}
 
+	body.theme-dark #header > nav ul li a.active {
+		background: #181818;
+		color: #ffffff !important;
+	}
+
 /* Wrapper */
 
 	#wrapper {
