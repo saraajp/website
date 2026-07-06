@@ -11,7 +11,25 @@
 		$header = $('#header'),
 		$titleBar = null,
 		$nav = $('#nav'),
-		$wrapper = $('#wrapper');
+		$wrapper = $('#wrapper'),
+		$themeToggle = $('#theme-toggle');
+
+	function updateThemeButton(theme) {
+		var isDark = theme === 'dark';
+		$body.removeClass('theme-dark theme-light').addClass('theme-' + theme);
+		$themeToggle.attr('aria-pressed', isDark);
+		$themeToggle.find('.theme-toggle__icon').text(isDark ? '🌙' : '☀️');
+		$themeToggle.find('.theme-toggle__label').text(isDark ? 'Switch to light mode' : 'Switch to dark mode');
+	}
+
+	var savedTheme = localStorage.getItem('theme') || 'dark';
+	updateThemeButton(savedTheme);
+
+	$themeToggle.on('click', function() {
+		var nextTheme = $body.hasClass('theme-dark') ? 'light' : 'dark';
+		localStorage.setItem('theme', nextTheme);
+		updateThemeButton(nextTheme);
+	});
 
 	// Breakpoints.
 		breakpoints({

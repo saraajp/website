@@ -76,6 +76,7 @@ input, select, textarea {
 
 	html {
 		box-sizing: border-box;
+		background: #111;
 	}
 
 	*, *:before, *:after {
@@ -83,7 +84,14 @@ input, select, textarea {
 	}
 
 	body {
-		background: #000;
+		background: #111;
+		color: #888;
+		transition: background-color 0.3s ease, color 0.3s ease;
+	}
+
+	body.theme-light {
+		background: #f4f4f4;
+		color: #444;
 	}
 
 		body.is-preload *, body.is-preload *:before, body.is-preload *:after {
@@ -2685,6 +2693,55 @@ input, select, textarea {
 				margin-bottom: 0;
 			}
 
+	.theme-toggle {
+		background: rgba(255, 255, 255, 0.14);
+		border: 1px solid rgba(255, 255, 255, 0.25);
+		border-radius: 999px;
+		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+		color: #ffffff;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6em;
+		margin: 1em auto 0;
+		padding: 0.6em 0.9em;
+		font-size: 0.9em;
+		transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
+	}
+
+		.theme-toggle:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
+		}
+
+	.theme-toggle__icon {
+		align-items: center;
+		background: rgba(255, 255, 255, 0.2);
+		border-radius: 50%;
+		display: inline-flex;
+		height: 1.7em;
+		justify-content: center;
+		transition: transform 0.3s ease, background-color 0.3s ease;
+		width: 1.7em;
+	}
+
+	.theme-toggle__label {
+		font-weight: 600;
+		letter-spacing: 0.01em;
+	}
+
+	body.theme-light .theme-toggle {
+		background: rgba(0, 0, 0, 0.08);
+		border-color: rgba(0, 0, 0, 0.15);
+		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+		color: #444;
+	}
+
+	body.theme-light .theme-toggle__icon {
+		background: rgba(255, 255, 255, 0.9);
+		transform: rotate(25deg) scale(1.04);
+	}
+
 /* Header */
 
 	#header {
@@ -2820,6 +2877,40 @@ input, select, textarea {
 	#wrapper {
 		background: #fff;
 		padding-right: 23em;
+	}
+
+	body.theme-dark #wrapper {
+		background: #181818;
+	}
+
+	body.theme-dark #main > section {
+		border-top-color: #2a2a2a;
+	}
+
+	body.theme-dark #main > section > .container {
+		color: #e4e4e4;
+	}
+
+	body.theme-dark #footer {
+		background: #1c1c1c;
+		color: #b9b9b9;
+	}
+
+	body.theme-light #wrapper {
+		background: #ffffff;
+	}
+
+	body.theme-light #main > section {
+		border-top-color: #e8e8e8;
+	}
+
+	body.theme-light #main > section > .container {
+		color: #444;
+	}
+
+	body.theme-light #footer {
+		background: #f2f2f2;
+		color: #777;
 	}
 
 /* Main */
