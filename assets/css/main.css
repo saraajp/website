@@ -2765,10 +2765,10 @@ input, select, textarea {
 		cursor: pointer;
 		display: inline-flex;
 		align-items: center;
-		gap: 0.6em;
-		margin: 1em auto 0;
-		padding: 0.6em 0.9em;
-		font-size: 0.9em;
+		gap: 0.5em;
+		margin: 0.5em auto 0;
+		padding: 0.4em 0.75em;
+		font-size: 0.8em;
 		transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
 	}
 
@@ -2782,10 +2782,10 @@ input, select, textarea {
 		background: #ffffff;
 		border-radius: 50%;
 		display: inline-flex;
-		height: 1.7em;
+		height: 1.5em;
 		justify-content: center;
 		transition: transform 0.3s ease, background-color 0.3s ease;
-		width: 1.7em;
+		width: 1.5em;
 	}
 
 	.theme-toggle__label {
@@ -2849,26 +2849,26 @@ input, select, textarea {
 			-webkit-flex-shrink: 0;
 			-ms-flex-shrink: 0;
 			flex-shrink: 0;
-			padding: 3em 2.5em 2em 2.5em;
+			padding: 1.5em 1.75em 0.75em 1.75em;
 		}
 
 			#header > header .avatar {
 				display: block;
-				margin: 0 auto 2.25em auto;
-				width: 7.5em;
+				margin: 0 auto 0.85em auto;
+				width: 4.75em;
 				box-shadow: 0 0.75em 1.75em -0.5em rgba(124, 92, 250, 0.45), 0 0 0 4px #ffffff;
 			}
 
 			#header > header h1 {
-				font-size: 1.6em;
+				font-size: 1.2em;
 				margin: 0;
 			}
 
 			#header > header p {
 				color: var(--ink-muted);
 				font-style: normal;
-				font-size: 0.85em;
-				margin: 0.75em 0 0 0;
+				font-size: 0.75em;
+				margin: 0.35em 0 0 0;
 			}
 
 		#header > footer {
@@ -2880,7 +2880,7 @@ input, select, textarea {
 			bottom: auto;
 			left: auto;
 			margin-top: auto;
-			padding: 1.75em 1.5em 2.25em 1.5em;
+			padding: 0.85em 1.25em 1em 1.25em;
 			width: 100%;
 			border-top: solid 1px var(--sidebar-border);
 		}
@@ -2890,19 +2890,19 @@ input, select, textarea {
 				display: flex;
 				flex-wrap: wrap;
 				justify-content: center;
-				gap: 0.7em;
+				gap: 0.5em;
 			}
 
 				#header > footer .icons li {
 					display: inline-flex;
 					padding: 0;
 					text-align: center;
-					width: calc(33.333% - 0.47em);
+					width: calc(33.333% - 0.34em);
 				}
 
 					#header > footer .icons li:nth-child(4),
 					#header > footer .icons li:nth-child(5) {
-						width: calc(50% - 0.35em);
+						width: calc(50% - 0.25em);
 					}
 
 					#header > footer .icons li a {
@@ -2914,7 +2914,7 @@ input, select, textarea {
 						display: inline-flex;
 						align-items: center;
 						justify-content: center;
-						padding: 0.55em;
+						padding: 0.4em;
 						border-radius: 12px;
 						width: 100%;
 					}
@@ -2932,8 +2932,8 @@ input, select, textarea {
 							display: inline-flex;
 							align-items: center;
 							justify-content: center;
-							width: 2.15em;
-							height: 2.15em;
+							width: 1.85em;
+							height: 1.85em;
 							border-radius: 50%;
 							background: var(--accent);
 						}
@@ -2952,7 +2952,7 @@ input, select, textarea {
 			-webkit-flex-grow: 0;
 			-ms-flex-grow: 0;
 			flex-grow: 0;
-			padding: 0.5em 1.25em;
+			padding: 0.35em 1.1em;
 		}
 
 			#header > nav ul {
@@ -2964,7 +2964,7 @@ input, select, textarea {
 				#header > nav ul li {
 					border-top: 0;
 					display: block;
-					padding: 0.25em 0;
+					padding: 0.1em 0;
 				}
 
 					#header > nav ul li a {
@@ -2977,8 +2977,9 @@ input, select, textarea {
 						color: var(--ink) !important;
 						display: flex;
 						align-items: center;
-						gap: 0.85em;
-						padding: 0.85em 1.1em;
+						gap: 0.7em;
+						padding: 0.55em 1em;
+						font-size: 0.9em;
 						text-align: left;
 						text-decoration: none;
 					}
@@ -3134,11 +3135,11 @@ input, select, textarea {
 			}
 
 				#header > header {
-					padding: 2em;
+					padding: 1.15em;
 				}
 
 				#header > footer {
-					padding: 1.5em;
+					padding: 0.75em 1em;
 				}
 
 		/* Wrapper */
@@ -3433,24 +3434,24 @@ input, select, textarea {
 			}
 
 				#header > header {
-					padding: 2em;
+					padding: 1.5em;
 				}
 
 					#header > header .avatar {
-						margin: 0 auto 1.6875em auto;
-						width: 6em;
+						margin: 0 auto 1em auto;
+						width: 4.5em;
 					}
 
 					#header > header h1 {
-						font-size: 1.5em;
+						font-size: 1.15em;
 					}
 
 					#header > header p {
-						margin: 1em 0 0 0;
+						margin: 0.5em 0 0 0;
 					}
 
 				#header > footer {
-					padding: 1.5em;
+					padding: 1em;
 				}
 
 		/* Main */
