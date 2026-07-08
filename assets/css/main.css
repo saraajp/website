@@ -3289,9 +3289,12 @@ input, select, textarea {
 					font-weight: 700;
 					height: 44px;
 					line-height: 44px;
-					padding: 0 1em;
+					padding: 0 1em 0 76px;
 					width: 100%;
 					text-align: left;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
 				}
 
 					#titleBar .title a {
@@ -3301,10 +3304,10 @@ input, select, textarea {
 
 				#titleBar .toggle {
 					text-decoration: none;
-					height: 4em;
+					height: 44px;
 					position: absolute;
 					top: 0;
-					width: 6em;
+					width: 64px;
 					border: 0;
 					outline: 0;
 					left: 0;
@@ -3481,8 +3484,8 @@ input, select, textarea {
 		/* Header Panel */
 
 			#titleBar .toggle {
-				height: 4em;
-				width: 6em;
+				height: 44px;
+				width: 44px;
 			}
 
 				#titleBar .toggle:before {
