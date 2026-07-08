@@ -2901,8 +2901,9 @@ input, select, textarea {
 				}
 
 					#header > footer .icons li:nth-child(4),
-					#header > footer .icons li:nth-child(5) {
-						width: calc(50% - 0.25em);
+					#header > footer .icons li:nth-child(5),
+					#header > footer .icons li:nth-child(6) {
+						width: calc(33.333% - 0.34em);
 					}
 
 					#header > footer .icons li a {
@@ -3036,7 +3037,8 @@ input, select, textarea {
 		body.theme-dark #main > section > .container h5,
 		body.theme-dark #main > section > .container h6,
 		body.theme-dark #main > section > .container strong,
-		body.theme-dark #main > section > .container b {
+		body.theme-dark #main > section > .container b,
+		body.theme-dark #main > section > .container header.major h2 + p {
 			color: #f2eefd;
 		}
 
