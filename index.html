@@ -5,6 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>~* YOUR NAME's cyber space *~</title>
   <meta name="description" content="Welcome to my personal corner of the web.">
+  <link rel="preconnect" href="https://abacus.jasoncameron.dev" crossorigin>
+  <script>
+    // Visitor counter request, started as early as possible (before the page finishes loading).
+    // Uses the free Abacus API, no signup needed.
+    (function () {
+      var NS = "saraajp.github.io"; // <-- CHANGE THIS to something unique to you (e.g. your GitHub Pages address)
+      var KEY = "visits";
+      var BASE = "https://abacus.jasoncameron.dev";
+      function call(action) {
+        return fetch(BASE + "/" + action + "/" + NS + "/" + KEY).then(function (r) {
+          if (!r.ok) throw r.status;
+          return r.json();
+        });
+      }
+      var seen = false, cached = null;
+      try {
+        seen = localStorage.getItem("counted") === "1";
+        cached = parseInt(localStorage.getItem("lastCount"), 10) || null;
+      } catch (e) {}
+      // Count each browser once; returning visitors just read the current number.
+      var promise = call(seen ? "get" : "hit")
+        .catch(function (s) { return s === 404 ? call("hit") : Promise.reject(s); })
+        .then(function (d) {
+          try { localStorage.setItem("counted", "1"); localStorage.setItem("lastCount", d.value); } catch (e) {}
+          return d.value;
+        });
+      promise.catch(function () {}); // avoid unhandled-rejection noise
+      window.__visitCounter = { cached: cached, promise: promise };
+    })();
+  </script>
   <style>
 /* ===== Y2K THEME ===== */
 :root {
@@ -441,34 +471,27 @@ a:hover { color: var(--pink-deep); }
 document.getElementById("year").textContent = new Date().getFullYear();
 document.getElementById("updated").textContent = new Date().toLocaleDateString("en-GB");
 
-// Real visitor counter shared by everyone (free Abacus API, no signup needed).
-// IMPORTANT: change COUNTER_NAMESPACE to something unique to you, such as your GitHub Pages address.
+// Visitor counter display: shows the last known number instantly, spins digits on a first visit.
 (function () {
-  const COUNTER_NAMESPACE = "saraajp.github.io";
-  const COUNTER_KEY = "visits";
-  const BASE = "https://abacus.jasoncameron.dev";
   const el = document.getElementById("counter");
-  if (!el) return;
+  const vc = window.__visitCounter;
+  if (!el || !vc) return;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const show = (n) => { el.textContent = String(n).padStart(6, "0"); };
 
-  function show(n) { el.textContent = String(n).padStart(6, "0"); }
-  function call(action) {
-    return fetch(BASE + "/" + action + "/" + COUNTER_NAMESPACE + "/" + COUNTER_KEY).then((r) => {
-      if (!r.ok) throw r.status;
-      return r.json();
-    });
+  let spin = null;
+  if (vc.cached) {
+    show(vc.cached); // instant for returning visitors
+  } else if (!reduce) {
+    const rand = () => Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join("");
+    el.textContent = rand();
+    spin = setInterval(() => { el.textContent = rand(); }, 70);
   }
 
-  // Count each browser once; returning visitors just read the current number.
-  let seen = false;
-  try { seen = localStorage.getItem("counted") === "1"; } catch (e) {}
-
-  call(seen ? "get" : "hit")
-    .catch((status) => (status === 404 ? call("hit") : Promise.reject(status)))
-    .then((d) => {
-      show(d.value);
-      try { localStorage.setItem("counted", "1"); } catch (e) {}
-    })
-    .catch(() => { el.textContent = "------"; }); // service unreachable: show dashes instead of a wrong number
+  vc.promise.then(
+    (n) => { clearInterval(spin); show(n); },
+    () => { clearInterval(spin); if (!vc.cached) el.textContent = "------"; } // service unreachable
+  );
 })();
 
 // Sparkle cursor trail (disabled for reduced-motion users and touch devices)
