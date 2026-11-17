@@ -79,22 +79,55 @@ a:hover { color: var(--pink-deep); }
 }
 .tagline { font-style: italic; margin: .5rem 0 1.5rem; color: #4a5f82; }
 
+/* Poppable bubbles */
+.orb-field { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .orb {
+  --dur: 6s;
   position: absolute;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
+  cursor: pointer;
+  pointer-events: auto;
   background: radial-gradient(circle at 30% 25%, #fff 0 12%, rgba(255,255,255,.2) 30%, transparent 31%),
               radial-gradient(circle at 50% 50%, var(--sky), var(--sky-deep));
-  opacity: .75;
-  box-shadow: inset -8px -10px 20px rgba(0,0,0,.2);
-  animation: float 6s ease-in-out infinite;
-  z-index: 0;
+  opacity: .8;
+  box-shadow: inset -8px -10px 20px rgba(0,0,0,.2), 0 4px 10px rgba(58,155,232,.3);
+  animation: appear .45s cubic-bezier(.2,1.6,.4,1) backwards, float var(--dur) ease-in-out .45s infinite;
+  -webkit-tap-highlight-color: transparent;
+  transition: filter .15s;
 }
-.orb-1 { width: 110px; height: 110px; left: 6%; top: 20px; }
-.orb-2 { width: 70px; height: 70px; right: 8%; top: 60px; animation-delay: -3s;
+.orb:hover { filter: brightness(1.12); }
+.orb.pink {
   background: radial-gradient(circle at 30% 25%, #fff 0 12%, rgba(255,255,255,.2) 30%, transparent 31%),
-              radial-gradient(circle at 50% 50%, var(--pink), var(--pink-deep)); }
+              radial-gradient(circle at 50% 50%, var(--pink), var(--pink-deep));
+  box-shadow: inset -8px -10px 20px rgba(0,0,0,.2), 0 4px 10px rgba(224,48,159,.3);
+}
+.orb.lime {
+  background: radial-gradient(circle at 30% 25%, #fff 0 12%, rgba(255,255,255,.2) 30%, transparent 31%),
+              radial-gradient(circle at 50% 50%, var(--lime), var(--lime-deep));
+  box-shadow: inset -8px -10px 20px rgba(0,0,0,.2), 0 4px 10px rgba(95,194,15,.3);
+}
+.orb.pop { animation: pop .28s ease-out forwards; pointer-events: none; }
 @keyframes float { 50% { transform: translateY(18px); } }
-.hero > *:not(.orb) { position: relative; z-index: 1; }
+@keyframes appear { from { transform: scale(0); opacity: 0; } }
+@keyframes pop {
+  0% { transform: scale(1); opacity: .8; }
+  40% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+.burst {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 15px;
+  animation: burst .6s ease-out forwards;
+}
+@keyframes burst {
+  from { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.2) rotate(180deg); opacity: 0; }
+}
+.hero > *:not(.orb-field) { position: relative; z-index: 1; }
 
 /* ===== Glossy bubble buttons ===== */
 .nav { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
@@ -289,8 +322,7 @@ a:hover { color: var(--pink-deep); }
   </div>
 
   <header class="hero">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
+    <div class="orb-field" id="orbField"></div>
     <h1 class="chrome-text">YOUR NAME</h1>
     <p class="tagline">~ developer / designer / digital dreamer ~</p>
     <nav class="nav">
@@ -442,6 +474,135 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
   });
 })();
 
+// Poppable bubbles around the title (max 3 at a time)
+(function () {
+  const hero = document.querySelector(".hero");
+  const field = document.getElementById("orbField");
+  const title = hero && hero.querySelector("h1");
+  if (!hero || !field || !title) return;
+
+  const MAX = 3;
+  const COLORS = ["", "pink", "lime"];
+  const BURST = { "": "#3a9be8", pink: "#e0309f", lime: "#5fc20f" };
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const orbs = [];
+  let pending = 0;
+  let lastPop = null;
+
+  // Bounding box of the actual text (not the full-width block), relative to the hero
+  function textBox(el, hr, pad) {
+    const rg = document.createRange();
+    rg.selectNodeContents(el);
+    const r = rg.getBoundingClientRect();
+    return { l: r.left - hr.left - pad, t: r.top - hr.top - pad, r: r.right - hr.left + pad, b: r.bottom - hr.top + pad };
+  }
+
+  // Find a free spot in a ring around the title, away from text, other bubbles and the last pop
+  function pickPosition(o) {
+    const hr = hero.getBoundingClientRect();
+    const W = hr.width, H = hr.height, s = o.size;
+    const tb = textBox(title, hr, 4);
+    const avoid = [tb, textBox(hero.querySelector(".tagline"), hr, 6), textBox(hero.querySelector(".nav"), hr, 6)];
+    const cx = (tb.l + tb.r) / 2, cy = (tb.t + tb.b) / 2;
+    const rx = (tb.r - tb.l) / 2, ry = (tb.b - tb.t) / 2;
+    const others = orbs.filter((p) => p !== o);
+
+    function ok(x, y, strict) {
+      if (x < 0 || y < 0 || x + s > W || y + s > H) return false;
+      for (const a of avoid) if (x < a.r && x + s > a.l && y < a.b && y + s > a.t) return false;
+      for (const p of others) {
+        if (Math.hypot(x + s / 2 - (p.x + p.size / 2), y + s / 2 - (p.y + p.size / 2)) < (s + p.size) / 2 + 14) return false;
+      }
+      if (strict && lastPop && Math.hypot(x + s / 2 - lastPop.x, y + s / 2 - lastPop.y) < 110) return false;
+      return true;
+    }
+
+    for (let i = 0; i < 250; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const gap = 6 + Math.random() * (i < 150 ? 70 : 200);
+      const x = cx + Math.cos(a) * (rx + s / 2 + gap) - s / 2;
+      const y = cy + Math.sin(a) * (ry + s / 2 + gap * 0.7) - s / 2;
+      if (ok(x, y, i < 200)) return { x, y };
+    }
+    for (let i = 0; i < 250; i++) {
+      const x = Math.random() * Math.max(0, W - s), y = Math.random() * Math.max(0, H - s);
+      if (ok(x, y, false)) return { x, y };
+    }
+    return { x: Math.random() * Math.max(0, W - s), y: 4 };
+  }
+
+  function place(o) {
+    const p = pickPosition(o);
+    o.x = p.x; o.y = p.y;
+    o.el.style.left = p.x + "px";
+    o.el.style.top = p.y + "px";
+  }
+
+  function burst(x, y, color) {
+    if (reduce) return;
+    const glyphs = ["✦", "✧", "★", "♥"];
+    for (let i = 0; i < 10; i++) {
+      const b = document.createElement("span");
+      b.className = "burst";
+      b.textContent = glyphs[i % glyphs.length];
+      const ang = (Math.PI * 2 * i) / 10 + Math.random() * 0.5;
+      const dist = 40 + Math.random() * 40;
+      b.style.left = x + "px";
+      b.style.top = y + "px";
+      b.style.color = i % 3 === 0 ? "#ff7ad9" : BURST[color];
+      b.style.setProperty("--dx", Math.cos(ang) * dist + "px");
+      b.style.setProperty("--dy", Math.sin(ang) * dist + "px");
+      document.body.appendChild(b);
+      setTimeout(() => b.remove(), 650);
+    }
+  }
+
+  function spawn() {
+    pending = Math.max(0, pending - 1);
+    if (orbs.length >= MAX) return;
+    const size = window.innerWidth < 600 ? 40 + Math.random() * 26 : 56 + Math.random() * 54;
+    const used = orbs.map((p) => p.color);
+    const free = COLORS.filter((c) => !used.includes(c));
+    const color = free.length ? free[Math.floor(Math.random() * free.length)] : COLORS[0];
+    const el = document.createElement("button");
+    el.type = "button";
+    el.className = "orb" + (color ? " " + color : "");
+    el.setAttribute("aria-label", "Pop the bubble");
+    el.style.width = el.style.height = size + "px";
+    el.style.setProperty("--dur", 5 + Math.random() * 3 + "s");
+    const o = { el, size, color, x: 0, y: 0, popped: false };
+    place(o);
+    orbs.push(o);
+    field.appendChild(el);
+    el.addEventListener("click", () => pop(o));
+  }
+
+  function schedule(delay) {
+    if (orbs.length + pending >= MAX) return;
+    pending++;
+    setTimeout(spawn, delay);
+  }
+
+  function pop(o) {
+    if (o.popped) return;
+    o.popped = true;
+    const r = o.el.getBoundingClientRect();
+    lastPop = { x: o.x + o.size / 2, y: o.y + o.size / 2 };
+    burst(r.left + r.width / 2, r.top + r.height / 2, o.color);
+    o.el.classList.add("pop");
+    const i = orbs.indexOf(o);
+    if (i > -1) orbs.splice(i, 1);
+    setTimeout(() => o.el.remove(), reduce ? 0 : 280);
+    schedule(500); // a new bubble appears somewhere else
+  }
+
+  let t;
+  function relayout() { orbs.forEach((o) => place(o)); }
+  window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(relayout, 150); });
+  window.addEventListener("load", relayout);
+
+  schedule(0); schedule(250); schedule(500);
+})();
 </script>
 </body>
 </html>
