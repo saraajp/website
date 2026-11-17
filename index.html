@@ -7,32 +7,32 @@
   <meta name="description" content="Welcome to my personal corner of the web.">
   <link rel="preconnect" href="https://abacus.jasoncameron.dev" crossorigin>
   <script>
-    // Visitor counter request, started as early as possible (before the page finishes loading).
+    // Visitor number: each visit gets the next number once, then it stays locked (refreshes don't count).
     // Uses the free Abacus API, no signup needed.
     (function () {
       var NS = "saraajp.github.io"; // <-- CHANGE THIS to something unique to you (e.g. your GitHub Pages address)
       var KEY = "visits";
+      // true  = you get a NEW number each time you open the site again (new tab / new visit);
+      //         refreshing the page keeps the same number.
+      // false = one number per browser, kept until its site data is cleared.
+      var NEW_NUMBER_EVERY_VISIT = true;
       var BASE = "https://abacus.jasoncameron.dev";
-      function call(action) {
-        return fetch(BASE + "/" + action + "/" + NS + "/" + KEY).then(function (r) {
-          if (!r.ok) throw r.status;
-          return r.json();
-        });
-      }
-      var seen = false, cached = null;
-      try {
-        seen = localStorage.getItem("counted") === "1";
-        cached = parseInt(localStorage.getItem("lastCount"), 10) || null;
-      } catch (e) {}
-      // Count each browser once; returning visitors just read the current number.
-      var promise = call(seen ? "get" : "hit")
-        .catch(function (s) { return s === 404 ? call("hit") : Promise.reject(s); })
-        .then(function (d) {
-          try { localStorage.setItem("counted", "1"); localStorage.setItem("lastCount", d.value); } catch (e) {}
-          return d.value;
-        });
+
+      var store = null, mine = null;
+      try { store = NEW_NUMBER_EVERY_VISIT ? window.sessionStorage : window.localStorage; } catch (e) {}
+      try { mine = parseInt(store.getItem("myVisitorNumber"), 10) || null; } catch (e) {}
+
+      var promise = mine
+        ? Promise.resolve(mine) // already have a number: no request at all, so it shows instantly
+        : fetch(BASE + "/hit/" + NS + "/" + KEY).then(function (r) {
+            if (!r.ok) throw r.status;
+            return r.json();
+          }).then(function (d) {
+            try { store.setItem("myVisitorNumber", d.value); } catch (e) {}
+            return d.value;
+          });
       promise.catch(function () {}); // avoid unhandled-rejection noise
-      window.__visitCounter = { cached: cached, promise: promise };
+      window.__visitCounter = { mine: mine, promise: promise };
     })();
   </script>
   <style>
@@ -471,7 +471,7 @@ a:hover { color: var(--pink-deep); }
 document.getElementById("year").textContent = new Date().getFullYear();
 document.getElementById("updated").textContent = new Date().toLocaleDateString("en-GB");
 
-// Visitor counter display: shows the last known number instantly, spins digits on a first visit.
+// Visitor counter display: your locked number shows instantly; spinning digits only while a new number is fetched.
 (function () {
   const el = document.getElementById("counter");
   const vc = window.__visitCounter;
@@ -480,8 +480,8 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
   const show = (n) => { el.textContent = String(n).padStart(6, "0"); };
 
   let spin = null;
-  if (vc.cached) {
-    show(vc.cached); // instant for returning visitors
+  if (vc.mine) {
+    show(vc.mine);
   } else if (!reduce) {
     const rand = () => Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join("");
     el.textContent = rand();
@@ -490,7 +490,7 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
 
   vc.promise.then(
     (n) => { clearInterval(spin); show(n); },
-    () => { clearInterval(spin); if (!vc.cached) el.textContent = "------"; } // service unreachable
+    () => { clearInterval(spin); el.textContent = "------"; } // service unreachable
   );
 })();
 
