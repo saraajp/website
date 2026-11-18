@@ -689,6 +689,30 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
 @media (max-width: 600px) { .task:not(.is-min) { display: none; } }
 .sm-sep { height: 1px; margin: .35rem .4rem; background: var(--silver-3); opacity: .6; }
 
+/* ===== Pintas photo of the hour ===== */
+.photo-frame[hidden] { display: none; }
+.photo-frame {
+  position: relative; margin: .4rem auto 0; width: 100%; max-width: 220px; padding: 8px 8px 0;
+  background: #fff; border-radius: 6px; transform: rotate(-1.5deg); transition: opacity .25s;
+  box-shadow: 0 0 0 1px var(--silver-3), 3px 5px 0 var(--win-shadow), 0 8px 16px rgba(0,0,0,.18);
+}
+.photo-frame::before { /* a strip of tape */
+  content: ""; position: absolute; top: -9px; left: 50%; width: 64px; height: 18px; margin-left: -32px;
+  transform: rotate(3deg); background: color-mix(in srgb, var(--pink) 65%, transparent);
+  box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+.photo-frame img {
+  display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 3px;
+  background: linear-gradient(160deg, var(--silver-2), var(--silver-1));
+}
+.photo-frame img.is-cutout {
+  object-position: center top;
+  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--pink) 45%, transparent), color-mix(in srgb, var(--sky) 55%, transparent));
+}
+.photo-frame figcaption { padding: .5rem 0 .6rem; font-size: 13px; font-weight: bold; color: var(--pink-deep); }
+.photo-frame.swap { opacity: 0; }
+.photo-next { margin: .8rem 0 0; font-size: 12px; opacity: .8; }
+
 /* ===== Footer ===== */
 .footer { text-align: center; padding: 2rem 1rem 3rem; font-size: 13px; color: var(--page-text); }
 .construction { font-weight: bold; animation: blink 1.6s infinite; }
@@ -754,12 +778,14 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
         </div>
       </section>
 
-      <section class="window">
-        <div class="titlebar"><span>mood.txt</span><span class="wbtns"><button type="button" class="wb wb-min" aria-label="Minimize window" title="Minimize">_</button><button type="button" class="wb wb-max" aria-label="Maximize window" title="Maximize">□</button><button type="button" class="wb wb-close" aria-label="Close window" title="Close">×</button></span></div>
-        <div class="window-body">
-          <p>♪ now listening: <em>something shiny</em></p>
-          <p>☆ now coding: <em>this site</em></p>
-          <p>✿ now feeling: <em>nostalgic</em></p>
+      <section class="window" id="pintascam">
+        <div class="titlebar"><span>pintas_cam.exe</span><span class="wbtns"><button type="button" class="wb wb-min" aria-label="Minimize window" title="Minimize">_</button><button type="button" class="wb wb-max" aria-label="Maximize window" title="Maximize">□</button><button type="button" class="wb wb-close" aria-label="Close window" title="Close">×</button></span></div>
+        <div class="window-body center">
+          <figure class="photo-frame" id="photoFrame">
+            <img id="photoImg" width="400" height="400" alt="Pintas, photo of the hour">
+            <figcaption id="photoCap">Pintas &#9829;</figcaption>
+          </figure>
+          <p class="photo-next" id="photoNext" hidden>next photo in --</p>
         </div>
       </section>
 
@@ -1573,6 +1599,93 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
     clock.title = d.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
   }
   tick(); setInterval(tick, 20000);
+})();
+
+// Pintas photo of the hour
+// ---------------------------------------------------------------------------------------------
+// HOW TO ADD YOUR PHOTOS
+//  1. Create a folder called "photos" next to index.html (the same folder, in your GitHub repo).
+//  2. Put your pictures in it, named 1.jpg, 2.jpg, 3.jpg ... (no gaps in the numbers).
+//  3. Set PHOTO_COUNT below to how many photos you have.
+// Different file type (png, webp...)? Change PHOTO_EXT. Want your own file names or a caption per
+// photo? Fill in PHOTOS instead (it wins over the numbered files). Example:
+//   const PHOTOS = [ "photos/sunbath.jpg", { src: "photos/box.jpg", caption: "box inspector" } ];
+// Tip: resize photos to about 800 px wide (under ~300 KB each) so the page stays fast.
+// ---------------------------------------------------------------------------------------------
+(function () {
+  const PHOTO_FOLDER = "photos/";
+  const PHOTO_COUNT = 3;
+  const PHOTO_EXT = "jpg";
+  const PHOTOS = [];
+
+  const frame = document.getElementById("photoFrame");
+  const img = document.getElementById("photoImg");
+  const cap = document.getElementById("photoCap");
+  const nextEl = document.getElementById("photoNext");
+  if (!frame || !img || !cap) return;
+
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const list = (PHOTOS.length ? PHOTOS : Array.from({ length: PHOTO_COUNT }, (_, i) => PHOTO_FOLDER + (i + 1) + "." + PHOTO_EXT))
+    .map((p) => (typeof p === "string" ? { src: p, caption: "" } : p));
+
+  const HOUR = 3600000;
+  const localMs = () => { const d = new Date(); return d.getTime() - d.getTimezoneOffset() * 60000; }; // wall-clock time of the visitor
+  const hourIndex = () => Math.floor(localMs() / HOUR);
+
+  let shown = null;
+  function apply(src, caption, isCutout) {
+    if (src === shown) return;
+    const first = shown === null;
+    shown = src;
+    const set = () => {
+      img.src = src;
+      img.classList.toggle("is-cutout", isCutout);
+      cap.textContent = caption;
+      frame.classList.remove("swap");
+    };
+    if (first || reduce) { set(); return; }
+    frame.classList.add("swap");  // fade out, swap, fade in
+    setTimeout(set, 250);
+  }
+
+  // find the first photo that really loads, starting at this hour's photo (skips missing files)
+  function pick(start, tries, cb) {
+    if (tries >= list.length) return cb(null);
+    const idx = (start + tries) % list.length;
+    const probe = new Image();
+    probe.onload = () => cb(idx);
+    probe.onerror = () => pick(start, tries + 1, cb);
+    probe.src = list[idx].src;
+  }
+
+  function update() {
+    if (!list.length) { useFallback(); return; }
+    pick(hourIndex() % list.length, 0, (idx) => {
+      if (idx === null) { useFallback(); return; }
+      frame.hidden = false;
+      apply(list[idx].src, list[idx].caption || "Pintas ♥", false);
+      if (nextEl) nextEl.hidden = list.length < 2;
+      if (list.length > 1) new Image().src = list[(idx + 1) % list.length].src; // warm up the next one
+      countdown();
+    });
+  }
+  function useFallback() {
+    // no default picture: if no photo from the folder loads, just say so
+    frame.hidden = true;
+    if (nextEl) { nextEl.hidden = false; nextEl.textContent = "no photos found in the photos/ folder"; }
+  }
+  function countdown() {
+    if (!nextEl || nextEl.hidden) return;
+    const mins = Math.max(1, Math.ceil((HOUR - (localMs() % HOUR)) / 60000));
+    nextEl.textContent = "next photo in " + (mins >= 60 ? "1 hour" : mins + " min");
+  }
+  function schedule() { // wake up right after the next full hour
+    setTimeout(() => { update(); schedule(); }, HOUR - (localMs() % HOUR) + 300);
+  }
+
+  update(); schedule();
+  setInterval(countdown, 20000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) { update(); countdown(); } }); // timers sleep in background tabs
 })();
 </script>
 </body>
