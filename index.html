@@ -579,7 +579,7 @@ a:hover { color: var(--pink-deep); }
 @keyframes say-pop { from { transform: scale(.6); opacity: 0; } }
 
 /* ===== Pintas + 8-ball row ===== */
-.duo { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; align-items: stretch; }
+.duo { grid-column: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; align-items: stretch; }
 .duo > .window, .duo > .slot > .window { display: flex; flex-direction: column; min-width: 0; }
 .duo > .window > .window-body, .duo > .slot > .window > .window-body { flex: 1; display: flex; flex-direction: column; }
 .duo #eightball .window-body { justify-content: center; }
@@ -733,7 +733,7 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
 /* ===== Responsive ===== */
 @media (max-width: 760px) {
   .layout { grid-template-columns: 1fr; }
-  .duo { grid-template-columns: 1fr; }
+  .duo { grid-column: 1; grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
