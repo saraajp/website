@@ -24,7 +24,7 @@
     // Visitor number: each visit gets the next number once, then it stays locked (refreshes don't count).
     // Uses the free Abacus API, no signup needed.
     (function () {
-      var NS = "saraajp.github.io"; // <-- CHANGE THIS to something unique to you (e.g. your GitHub Pages address)
+      var NS = "saraajp.github.io"; // your GitHub Pages address (the counter is keyed to it)
       var KEY = "visits";
       // true  = you get a NEW number each time you open the site again (new tab / new visit);
       //         refreshing the page keeps the same number.
@@ -280,9 +280,12 @@ a:hover { color: var(--pink-deep); }
   padding: 1rem;
   display: grid;
   grid-template-columns: 240px 1fr;
+  grid-template-rows: auto 1fr;
   gap: 1.2rem;
   align-items: start;
 }
+.layout > .sidebar { grid-column: 1; grid-row: 1 / span 2; }
+.layout > .content { grid-column: 2; grid-row: 1; }
 .sidebar, .content { display: flex; flex-direction: column; gap: 1.2rem; }
 
 /* ===== Retro window ===== */
@@ -579,7 +582,7 @@ a:hover { color: var(--pink-deep); }
 @keyframes say-pop { from { transform: scale(.6); opacity: 0; } }
 
 /* ===== Pintas + 8-ball row ===== */
-.duo { grid-column: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; align-items: stretch; }
+.duo { grid-column: 2; grid-row: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; align-items: stretch; }
 .duo > .window, .duo > .slot > .window { display: flex; flex-direction: column; min-width: 0; }
 .duo > .window > .window-body, .duo > .slot > .window > .window-body { flex: 1; display: flex; flex-direction: column; }
 .duo #eightball .window-body { justify-content: center; }
@@ -733,7 +736,9 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
 /* ===== Responsive ===== */
 @media (max-width: 760px) {
   .layout { grid-template-columns: 1fr; }
-  .duo { grid-column: 1; grid-template-columns: 1fr; }
+  .layout { grid-template-rows: none; }
+  .layout > .sidebar, .layout > .content, .duo { grid-column: 1; grid-row: auto; }
+  .duo { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
