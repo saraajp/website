@@ -306,7 +306,8 @@ a:hover { color: var(--pink-deep); }
   border-bottom: 1px solid var(--tb-line);
 }
 .wbtns { display: flex; gap: 4px; }
-.wbtns i {
+.wbtns i, .wbtns .wb {
+  padding: 0; font-family: inherit; font-weight: bold;
   font-style: normal;
   width: 18px; height: 18px;
   display: grid; place-items: center;
@@ -317,7 +318,7 @@ a:hover { color: var(--pink-deep); }
   border-radius: 4px;
   text-shadow: none;
 }
-.wbtns i:last-child { background: linear-gradient(180deg, #ffb0b0, #e04848); color: #fff; }
+.wbtns i:last-child, .wbtns .wb-close { background: linear-gradient(180deg, #ffb0b0, #e04848); color: #fff; }
 .window-body { padding: 1rem 1.1rem; }
 .window-body h2 { margin: 0 0 .6rem; color: var(--pink-deep); text-shadow: 1px 1px 0 #fff; }
 .center { text-align: center; }
@@ -579,11 +580,114 @@ a:hover { color: var(--pink-deep); }
 
 /* ===== Pintas + 8-ball row ===== */
 .duo { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; align-items: stretch; }
-.duo > .window { display: flex; flex-direction: column; min-width: 0; }
-.duo > .window > .window-body { flex: 1; display: flex; flex-direction: column; }
+.duo > .window, .duo > .slot > .window { display: flex; flex-direction: column; min-width: 0; }
+.duo > .window > .window-body, .duo > .slot > .window > .window-body { flex: 1; display: flex; flex-direction: column; }
 .duo #eightball .window-body { justify-content: center; }
 .duo #pintas .pet-stage { margin-top: auto; }
 .ball-say { width: 100%; }
+
+/* ===== Fake desktop ===== */
+.wbtns .wb:hover { filter: brightness(1.08); }
+.wbtns .wb:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+@media (pointer: coarse) { .wbtns .wb { width: 26px; height: 26px; font-size: 14px; } }
+
+.slot { position: relative; display: flex; flex-direction: column; min-width: 0; }
+.slot > .window { position: relative; z-index: 1; flex: 1 1 auto; transform: translate(var(--tx, 0px), var(--ty, 0px)); }
+.slot > .window .titlebar { cursor: grab; user-select: none; -webkit-user-select: none; }
+.window.dragging { will-change: transform; box-shadow: 0 0 0 1px var(--silver-3), 8px 12px 0 var(--win-shadow), 0 18px 34px rgba(0,0,0,.3); }
+.window.dragging .titlebar { cursor: grabbing; }
+.window.snap { transition: transform .25s cubic-bezier(.2,.9,.3,1); }
+body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbing; }
+.window.is-hidden { visibility: hidden; pointer-events: none; }
+
+.slot > .window.is-max {
+  position: fixed; z-index: 7000 !important; transform: none;
+  left: 10px; top: 10px; right: 10px; bottom: 10px; width: auto; height: auto; margin: 0;
+  display: flex; flex-direction: column;
+  box-shadow: 0 0 0 1px var(--silver-3), 0 12px 40px rgba(0,0,0,.45);
+}
+.window.is-max .window-body { flex: 1 1 auto; min-height: 0; overflow: auto; }
+.window.is-max .pet-stage { width: min(380px, 70%); }
+.window.is-max .ball { width: min(300px, 46vh); }
+
+.window.win-min { animation: win-min .22s ease-in forwards; }
+.window.win-close { animation: win-close .18s ease-in forwards; }
+.window.win-open { animation: win-open .24s ease-out; }
+.window.win-pop { animation: win-pop .22s cubic-bezier(.2,1.4,.4,1); }
+@keyframes win-min {
+  to { transform: translate(calc(var(--tx, 0px) + var(--dx, 0px)), calc(var(--ty, 0px) + var(--dy, 0px))) scale(.08); opacity: 0; }
+}
+@keyframes win-open {
+  from { transform: translate(calc(var(--tx, 0px) + var(--dx, 0px)), calc(var(--ty, 0px) + var(--dy, 0px))) scale(.08); opacity: 0; }
+}
+@keyframes win-close { to { transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(.85); opacity: 0; } }
+@keyframes win-pop { from { transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(.9); opacity: 0; } }
+
+/* empty slot left behind by a moved / minimized / closed window */
+.ghost {
+  position: absolute; inset: 0; z-index: 0; display: none;
+  flex-direction: column; align-items: center; justify-content: center; gap: .2rem;
+  padding: .5rem; font: inherit; font-size: 12px; text-align: center;
+  border: 2px dashed var(--silver-3); border-radius: 12px;
+  background: color-mix(in srgb, var(--silver-1) 30%, transparent);
+  color: var(--page-text);
+}
+.ghost b { font-size: 13px; }
+.ghost:hover, .ghost:focus-visible { border-color: var(--pink-deep); outline: none; }
+.slot.vacant > .ghost { display: flex; }
+.ghost, .task, .start-btn, .tray, .sm-item, .sm-side { user-select: none; -webkit-user-select: none; }
+
+/* taskbar + start menu */
+.taskbar { display: none; }
+.has-desktop .taskbar {
+  position: relative; height: 46px;
+  display: flex; align-items: center; gap: 8px; padding: 5px 8px;
+  background: linear-gradient(180deg, #f7fbff 0%, #cfdbea 45%, #9fb1c9 100%);
+  border-top: 2px solid #fff; box-shadow: 0 -3px 10px rgba(0,0,0,.25);
+  font-size: 12px; color: var(--ink);
+}
+.start-btn { flex: none; height: 34px; padding: 0 1.1rem; font: inherit; font-weight: bold; font-size: 14px; line-height: 1; }
+.tasks { flex: 1; min-width: 0; display: flex; gap: 5px; overflow: hidden; }
+.task {
+  flex: 0 1 150px; min-width: 38px; height: 34px; padding: 0 10px;
+  font: inherit; font-size: 12px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--ink); border: 1px solid #6c7f9c; border-radius: 8px;
+  background: linear-gradient(180deg, #fff, #c9d6e8);
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+.task[hidden] { display: none; }
+.task[aria-pressed="true"] { font-weight: bold; background: linear-gradient(180deg, #b9c8dc, #e8eef7); box-shadow: inset 0 2px 4px rgba(0,0,0,.3); }
+.task.is-min { font-style: italic; opacity: .75; }
+.task:focus-visible, .start-btn:focus-visible { outline: 2px dashed var(--pink-deep); outline-offset: 2px; }
+.tray {
+  flex: none; padding: 6px 12px; border-radius: 8px; font-variant-numeric: tabular-nums;
+  border: 1px solid #8a9bb2; background: linear-gradient(180deg, #dfe7f1, #fff); box-shadow: inset 0 1px 3px rgba(0,0,0,.2);
+}
+.startmenu {
+  position: absolute; left: 8px; bottom: calc(100% + 4px); z-index: 8500; display: flex;
+  width: min(300px, calc(100vw - 16px)); max-height: min(72vh, 560px);
+  border: 2px solid #fff; border-radius: 12px 12px 6px 6px; overflow: hidden;
+  background: linear-gradient(180deg, #fff, var(--silver-2)); color: var(--ink);
+  box-shadow: 0 0 0 1px var(--silver-3), 6px 8px 0 var(--win-shadow), 0 14px 30px rgba(0,0,0,.35);
+}
+.startmenu[hidden] { display: none; }
+.sm-side {
+  flex: none; width: 34px; display: flex; align-items: center;
+  background: linear-gradient(0deg, var(--tb3), var(--tb1)); color: #fff;
+  writing-mode: vertical-rl; transform: rotate(180deg); padding: .6rem 0 .6rem;
+  font: 900 18px/1 "Arial Black", Impact, sans-serif; letter-spacing: 2px; text-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+.sm-list { flex: 1; min-width: 0; overflow-y: auto; padding: .4rem; }
+.sm-head { padding: .2rem .6rem; font-size: 11px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; opacity: .7; }
+.sm-item {
+  display: flex; justify-content: space-between; align-items: center; gap: .5rem; width: 100%;
+  padding: .45rem .6rem; border: 0; border-radius: 8px; background: none;
+  font: inherit; font-size: 13px; color: var(--ink); text-align: left;
+}
+.sm-item:hover, .sm-item:focus-visible { outline: none; color: #fff; background: linear-gradient(180deg, var(--tb1), var(--tb2)); }
+.sm-state { font-size: 11px; opacity: .75; }
+@media (max-width: 600px) { .task:not(.is-min) { display: none; } }
+.sm-sep { height: 1px; margin: .35rem .4rem; background: var(--silver-3); opacity: .6; }
 
 /* ===== Footer ===== */
 .footer { text-align: center; padding: 2rem 1rem 3rem; font-size: 13px; color: var(--page-text); }
@@ -642,7 +746,7 @@ a:hover { color: var(--pink-deep); }
     <!-- Sidebar -->
     <aside class="sidebar">
       <section class="window">
-        <div class="titlebar"><span>profile.exe</span><span class="wbtns"><i>_</i><i>□</i><i>×</i></span></div>
+        <div class="titlebar"><span>profile.exe</span><span class="wbtns"><button type="button" class="wb wb-min" aria-label="Minimize window" title="Minimize">_</button><button type="button" class="wb wb-max" aria-label="Maximize window" title="Maximize">□</button><button type="button" class="wb wb-close" aria-label="Close window" title="Close">×</button></span></div>
         <div class="window-body center">
           <div class="avatar" role="img" aria-label="Profile picture placeholder">:)</div>
           <p><b>YOUR NAME</b><br>Somewhere, Earth</p>
@@ -651,7 +755,7 @@ a:hover { color: var(--pink-deep); }
       </section>
 
       <section class="window">
-        <div class="titlebar"><span>mood.txt</span><span class="wbtns"><i>_</i><i>□</i><i>×</i></span></div>
+        <div class="titlebar"><span>mood.txt</span><span class="wbtns"><button type="button" class="wb wb-min" aria-label="Minimize window" title="Minimize">_</button><button type="button" class="wb wb-max" aria-label="Maximize window" title="Maximize">□</button><button type="button" class="wb wb-close" aria-label="Close window" title="Close">×</button></span></div>
         <div class="window-body">
           <p>♪ now listening: <em>something shiny</em></p>
           <p>☆ now coding: <em>this site</em></p>
@@ -660,7 +764,7 @@ a:hover { color: var(--pink-deep); }
       </section>
 
       <section class="window">
-        <div class="titlebar"><span>counter.dll</span><span class="wbtns"><i>_</i><i>□</i><i>×</i></span></div>
+        <div class="titlebar"><span>counter.dll</span><span class="wbtns"><button type="button" class="wb wb-min" aria-label="Minimize window" title="Minimize">_</button><button type="button" class="wb wb-max" aria-label="Maximize window" title="Maximize">□</button><button type="button" class="wb wb-close" aria-label="Close window" title="Close">×</button></span></div>
         <div class="window-body center">
           <p>You are visitor #</p>
           <div class="counter" id="counter">------</div>
@@ -668,7 +772,7 @@ a:hover { color: var(--pink-deep); }
       </section>
 
       <section class="window" id="display">
-        <div class="titlebar"><span>display.cpl</span><span class="wbtns"><i>_</i><i>□</i><i>×</i></span></div>
+        <div class="titlebar"><span>display.cpl</span><span class="wbtns"><button type="button" class="wb wb-min" aria-label="Minimize window" title="Minimize">_</button><button type="button" class="wb wb-max" aria-label="Maximize window" title="Maximize">□</button><button type="button" class="wb wb-close" aria-label="Close window" title="Close">×</button></span></div>
         <div class="window-body">
           <p style="margin:0"><b>Display Properties</b></p>
           <p class="dp-sub">Wallpaper + cursor + sparkles</p>
@@ -691,7 +795,7 @@ a:hover { color: var(--pink-deep); }
     <div class="content">
 
       <section class="window" id="about">
-        <div class="titlebar"><span>about_me.html</span><span class="wbtns"><i>_</i><i>□</i><i>×</i></span></div>
+        <div class="titlebar"><span>about_me.html</span><span class="wbtns"><button type="button" class="wb wb-min" aria-label="Minimize window" title="Minimize">_</button><button type="button" class="wb wb-max" aria-label="Maximize window" title="Maximize">□</button><button type="button" class="wb wb-close" aria-label="Close window" title="Close">×</button></span></div>
         <div class="window-body">
           <h2>✦ Hello, World! ✦</h2>
           <p>Hi! I'm <b>YOUR NAME</b>. This is my little corner of the internet, built with love, glitter and zero frameworks.
@@ -701,7 +805,7 @@ a:hover { color: var(--pink-deep); }
       </section>
 
       <section class="window" id="projects">
-        <div class="titlebar"><span>my_projects/</span><span class="wbtns"><i>_</i><i>□</i><i>×</i></span></div>
+        <div class="titlebar"><span>my_projects/</span><span class="wbtns"><button type="button" class="wb wb-min" aria-label="Minimize window" title="Minimize">_</button><button type="button" class="wb wb-max" aria-label="Maximize window" title="Maximize">□</button><button type="button" class="wb wb-close" aria-label="Close window" title="Close">×</button></span></div>
         <div class="window-body">
           <h2>✦ Projects ✦</h2>
           <div class="cards">
@@ -725,7 +829,7 @@ a:hover { color: var(--pink-deep); }
       </section>
 
       <section class="window" id="links">
-        <div class="titlebar"><span>cool_links.lnk</span><span class="wbtns"><i>_</i><i>□</i><i>×</i></span></div>
+        <div class="titlebar"><span>cool_links.lnk</span><span class="wbtns"><button type="button" class="wb wb-min" aria-label="Minimize window" title="Minimize">_</button><button type="button" class="wb wb-max" aria-label="Maximize window" title="Maximize">□</button><button type="button" class="wb wb-close" aria-label="Close window" title="Close">×</button></span></div>
         <div class="window-body">
           <h2>✦ Links ✦</h2>
           <ul class="linklist">
@@ -743,7 +847,7 @@ a:hover { color: var(--pink-deep); }
       </section>
 
       <section class="window" id="contact">
-        <div class="titlebar"><span>contact.msg</span><span class="wbtns"><i>_</i><i>□</i><i>×</i></span></div>
+        <div class="titlebar"><span>contact.msg</span><span class="wbtns"><button type="button" class="wb wb-min" aria-label="Minimize window" title="Minimize">_</button><button type="button" class="wb wb-max" aria-label="Maximize window" title="Maximize">□</button><button type="button" class="wb wb-close" aria-label="Close window" title="Close">×</button></span></div>
         <div class="window-body">
           <h2>✦ Say Hi ✦</h2>
           <p>Send me a message! Swap this link for your email or social profile.</p>
@@ -756,7 +860,7 @@ a:hover { color: var(--pink-deep); }
 
     <div class="duo">
       <section class="window" id="pintas">
-        <div class="titlebar"><span>pet_pintas.exe</span><span class="wbtns"><i>_</i><i>□</i><i>×</i></span></div>
+        <div class="titlebar"><span>pet_pintas.exe</span><span class="wbtns"><button type="button" class="wb wb-min" aria-label="Minimize window" title="Minimize">_</button><button type="button" class="wb wb-max" aria-label="Maximize window" title="Maximize">□</button><button type="button" class="wb wb-close" aria-label="Close window" title="Close">×</button></span></div>
         <div class="window-body center pet-body">
           <h2>✦ Pet Pintas ✦</h2>
           <p class="pet-hint" id="petHint">Click Pintas to give him pets!</p>
@@ -791,7 +895,7 @@ a:hover { color: var(--pink-deep); }
       </section>
 
       <section class="window" id="eightball">
-        <div class="titlebar"><span>magic_8ball.exe</span><span class="wbtns"><i>_</i><i>□</i><i>×</i></span></div>
+        <div class="titlebar"><span>magic_8ball.exe</span><span class="wbtns"><button type="button" class="wb wb-min" aria-label="Minimize window" title="Minimize">_</button><button type="button" class="wb wb-max" aria-label="Maximize window" title="Maximize">□</button><button type="button" class="wb wb-close" aria-label="Close window" title="Close">×</button></span></div>
         <div class="window-body center">
           <h2>✦ Ask Pintas ✦</h2>
           <p style="margin:0">Think of a yes/no question, then click the ball.</p>
@@ -808,6 +912,16 @@ a:hover { color: var(--pink-deep); }
     <p>★ © 2000 — <span id="year">2026</span> YOUR NAME ★ Last updated: <span id="updated">today</span> ★</p>
     <p class="construction">🚧 This site is always under construction 🚧</p>
   </footer>
+
+  <nav class="taskbar" id="taskbar" aria-label="Taskbar">
+    <button type="button" class="bubble-btn start-btn" id="startBtn" aria-haspopup="true" aria-expanded="false" aria-controls="startMenu">★ start</button>
+    <div class="tasks" id="tasks" role="toolbar" aria-label="Open windows"></div>
+    <div class="tray" id="clock">--:--</div>
+    <div class="startmenu" id="startMenu" role="menu" aria-label="Start menu" hidden>
+      <div class="sm-side" aria-hidden="true"><span>Y2K OS</span></div>
+      <div class="sm-list" id="smList"></div>
+    </div>
+  </nav>
 
   <script>
 // Footer year + "last updated" date
@@ -1160,6 +1274,305 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
     }
     setTimeout(reveal, reduce ? 0 : 900);
   });
+})();
+
+// Fake desktop: draggable / minimizable windows, taskbar and Start menu
+(function () {
+  const els = Array.from(document.querySelectorAll(".window"));
+  const tasksEl = document.getElementById("tasks");
+  const startBtn = document.getElementById("startBtn");
+  const menu = document.getElementById("startMenu");
+  const menuList = document.getElementById("smList");
+  const clock = document.getElementById("clock");
+  if (!els.length || !tasksEl || !startBtn || !menu || !menuList) return;
+
+  document.documentElement.classList.add("has-desktop");
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const canDragMQ = window.matchMedia("(min-width: 761px) and (pointer: fine)");
+  const clamp = (v, a, b) => Math.min(Math.max(v, a), Math.max(a, b));
+  const W = [];
+  let zTop = 10, active = null, hiddenByDesktop = [];
+
+  const moved = (w) => Math.abs(w.tx) + Math.abs(w.ty) > 30;
+
+  function sync(w) {
+    const vacant = w.state !== "open" || w.max || moved(w);
+    w.slot.classList.toggle("vacant", vacant);
+    if (vacant) {
+      const msg = w.state === "closed" ? "closed · click to reopen"
+        : w.state === "min" ? "minimized · click to restore"
+        : w.max ? "maximized · click to restore" : "moved · click to put back";
+      if (w.ghost.dataset.msg !== msg) {
+        w.ghost.dataset.msg = msg;
+        w.ghost.textContent = "";
+        const b = document.createElement("b"); b.textContent = w.title;
+        const s = document.createElement("span"); s.textContent = msg;
+        w.ghost.append(b, s);
+      }
+    }
+    w.task.hidden = w.state === "closed";
+    w.task.classList.toggle("is-min", w.state === "min");
+    markTask(w);
+    w.bMax.textContent = w.max ? "▣" : "□";
+    w.bMax.setAttribute("aria-label", w.max ? "Restore window" : "Maximize window");
+    w.bMax.title = w.max ? "Restore" : "Maximize";
+  }
+  function markTask(w) { w.task.setAttribute("aria-pressed", String(active === w && w.state === "open")); }
+
+  function setT(w, x, y) {
+    w.tx = x; w.ty = y;
+    w.el.style.setProperty("--tx", x + "px");
+    w.el.style.setProperty("--ty", y + "px");
+    sync(w);
+  }
+
+  function focus(w) {
+    active = w;
+    if (!w.max) {
+      w.el.style.zIndex = ++zTop;
+      if (zTop > 5000) {
+        const s = W.slice().sort((a, b) => (parseInt(a.el.style.zIndex, 10) || 0) - (parseInt(b.el.style.zIndex, 10) || 0));
+        s.forEach((x, i) => { if (x.el.style.zIndex) x.el.style.zIndex = 10 + i; });
+        zTop = 10 + s.length;
+      }
+    }
+    W.forEach(markTask);
+  }
+
+  function fly(w) { // set the offset from the window to its taskbar button (for the shrink / grow animation)
+    const r = w.el.getBoundingClientRect(), t = w.task.getBoundingClientRect();
+    w.el.style.setProperty("--dx", (t.left + t.width / 2) - (r.left + r.width / 2) + "px");
+    w.el.style.setProperty("--dy", (t.top + t.height / 2) - (r.top + r.height / 2) + "px");
+  }
+  function stopAnim(w) {
+    clearTimeout(w.t);
+    w.el.classList.remove("win-min", "win-close", "win-open", "win-pop");
+  }
+  function play(w, cls, ms, done) {
+    stopAnim(w);
+    if (reduce) { if (done) done(); return; }
+    void w.el.offsetWidth;
+    w.el.classList.add(cls);
+    w.t = setTimeout(() => { w.el.classList.remove(cls); if (done) done(); }, ms);
+  }
+
+  function minimize(w) {
+    if (w.state !== "open") return;
+    stopAnim(w);
+    w.state = "min";
+    if (active === w) active = null;
+    fly(w); sync(w);
+    play(w, "win-min", 220, () => w.el.classList.add("is-hidden"));
+  }
+  function closeWin(w) {
+    if (w.state !== "open") return;
+    stopAnim(w);
+    w.state = "closed";
+    if (active === w) active = null;
+    sync(w);
+    play(w, "win-close", 180, () => w.el.classList.add("is-hidden"));
+  }
+  function reveal(w) { // scroll so the window is on screen (measured at its resting place, not mid-animation)
+    if (w.max) return;
+    const top = w.slot.getBoundingClientRect().top + w.ty, hgt = w.el.offsetHeight, vh = window.innerHeight;
+    if (top >= 0 && top + hgt <= vh) return;
+    const target = Math.max(0, window.scrollY + top - (hgt < vh ? (vh - hgt) / 2 : 12));
+    window.scrollTo({ top: target, behavior: reduce ? "auto" : "smooth" });
+  }
+  function openWin(w, o) {
+    o = o || {};
+    if (w.state !== "open") {
+      stopAnim(w);
+      const fromMin = w.state === "min";
+      if (fromMin && !o.quiet) fly(w);
+      w.state = "open";
+      w.el.classList.remove("is-hidden");
+      if (!o.quiet) play(w, fromMin ? "win-open" : "win-pop", 240);
+    }
+    focus(w); sync(w);
+    if (o.scroll) reveal(w);
+  }
+  function toggleMax(w) {
+    if (w.state !== "open") return;
+    if (!w.max) {
+      w.slot.style.height = w.slot.offsetHeight + "px"; // keep the slot's size while the window is fixed to the screen
+      w.max = true; w.el.classList.add("is-max");
+    } else {
+      w.max = false; w.el.classList.remove("is-max"); w.slot.style.height = "";
+    }
+    focus(w); sync(w);
+  }
+  function resetPos(w, animate) {
+    if (animate && !reduce) { w.el.classList.add("snap"); setTimeout(() => w.el.classList.remove("snap"), 300); }
+    setT(w, 0, 0);
+  }
+
+  function bounds(w) { // windows stay inside the page, above the taskbar (which sits at the very end)
+    const s = w.slot.getBoundingClientRect();
+    const L = s.left + window.scrollX, T = s.top + window.scrollY;
+    const bar = document.getElementById("taskbar");
+    const limit = bar ? bar.getBoundingClientRect().top + window.scrollY : document.documentElement.scrollHeight;
+    return { minX: -L, maxX: document.documentElement.clientWidth - L - w.el.offsetWidth, minY: -T, maxY: limit - T - w.el.offsetHeight };
+  }
+
+  function startDrag(w, tb, e) {
+    if (e.button !== 0 || e.target.closest(".wbtns")) return;
+    if (w.max || w.state !== "open") return;
+    if (!canDragMQ.matches || (e.pointerType !== "mouse" && e.pointerType !== "pen")) return;
+    e.preventDefault();
+    try { const sel = window.getSelection(); if (sel) sel.removeAllRanges(); } catch (_) {}
+    try { tb.setPointerCapture(e.pointerId); } catch (_) {}
+    const sx = e.pageX, sy = e.pageY, tx0 = w.tx, ty0 = w.ty, b = bounds(w);
+    let cx = e.clientX, cy = e.clientY, raf = 0, started = false;
+    w.el.classList.remove("snap");
+    w.el.classList.add("dragging");
+    document.body.classList.add("is-dragging");
+    const apply = () => setT(w, clamp(tx0 + cx + window.scrollX - sx, b.minX, b.maxX), clamp(ty0 + cy + window.scrollY - sy, b.minY, b.maxY));
+    const move = (ev) => { cx = ev.clientX; cy = ev.clientY; started = true; apply(); };
+    const loop = () => { // scroll the page while the window is held near the top / bottom edge of the screen
+      if (started) {
+        const bottom = window.innerHeight;
+        const dy = cy < 36 ? -Math.ceil((36 - cy) / 3) : cy > bottom - 36 ? Math.ceil((cy - (bottom - 36)) / 3) : 0;
+        if (dy) { window.scrollBy(0, dy); apply(); }
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    const end = () => {
+      cancelAnimationFrame(raf);
+      ["pointermove", "pointerup", "pointercancel", "lostpointercapture"].forEach((t) => tb.removeEventListener(t, t === "pointermove" ? move : end));
+      w.el.classList.remove("dragging");
+      document.body.classList.remove("is-dragging");
+    };
+    tb.addEventListener("pointermove", move);
+    ["pointerup", "pointercancel", "lostpointercapture"].forEach((t) => tb.addEventListener(t, end));
+  }
+
+  function wire(w) {
+    const tb = w.el.querySelector(".titlebar");
+    w.el.addEventListener("pointerdown", () => { if (active !== w && w.state === "open") focus(w); }, true);
+    w.bMin.addEventListener("click", () => minimize(w));
+    w.bMax.addEventListener("click", () => toggleMax(w));
+    w.bClose.addEventListener("click", () => closeWin(w));
+    tb.addEventListener("dblclick", (e) => { if (!e.target.closest(".wbtns")) toggleMax(w); });
+    tb.addEventListener("pointerdown", (e) => startDrag(w, tb, e));
+    w.ghost.addEventListener("click", () => {
+      if (w.state !== "open") openWin(w, { scroll: true });
+      else if (w.max) toggleMax(w);
+      else resetPos(w, true);
+    });
+    w.task.addEventListener("click", () => {
+      if (w.state !== "open") openWin(w, { scroll: true });
+      else if (active === w) minimize(w);
+      else { focus(w); reveal(w); }
+    });
+  }
+
+  // wrap every window in a "slot" so its place in the layout is kept when it moves, minimizes or closes
+  els.forEach((el) => {
+    const slot = document.createElement("div");
+    slot.className = "slot";
+    el.parentNode.insertBefore(slot, el);
+    slot.appendChild(el);
+    const ghost = document.createElement("button");
+    ghost.type = "button"; ghost.className = "ghost";
+    slot.appendChild(ghost);
+    const title = ((el.querySelector(".titlebar > span") || {}).textContent || "window").trim();
+    const task = document.createElement("button");
+    task.type = "button"; task.className = "task"; task.textContent = title; task.title = title;
+    tasksEl.appendChild(task);
+    const w = { el, slot, ghost, task, title, tx: 0, ty: 0, state: "open", max: false, t: 0,
+      bMin: el.querySelector(".wb-min"), bMax: el.querySelector(".wb-max"), bClose: el.querySelector(".wb-close") };
+    W.push(w);
+    wire(w);
+    sync(w);
+  });
+
+  // ---- Start menu ----
+  function renderMenu() {
+    menuList.textContent = "";
+    const add = (cls, text) => { const d = document.createElement("div"); d.className = cls; if (text) d.textContent = text; menuList.appendChild(d); };
+    const item = (label, hint, fn) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "sm-item"; b.setAttribute("role", "menuitem");
+      const a = document.createElement("span"); a.textContent = label;
+      const s = document.createElement("span"); s.className = "sm-state"; s.textContent = hint || "";
+      b.append(a, s);
+      b.addEventListener("click", () => { setMenu(false); fn(); });
+      menuList.appendChild(b);
+    };
+    add("sm-head", "Programs");
+    W.forEach((w) => item(w.title, w.state === "closed" ? "closed" : w.state === "min" ? "minimized" : "", () => openWin(w, { scroll: true })));
+    add("sm-sep");
+    item("Show desktop", "", showDesktop);
+    item("Tidy up windows", "", tidy);
+  }
+  function setMenu(open, focusFirst) {
+    menu.hidden = !open;
+    startBtn.setAttribute("aria-expanded", String(open));
+    if (open) {
+      renderMenu();
+      menu.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" }); // make sure the whole menu is on screen
+      if (focusFirst) { const f = menuList.querySelector(".sm-item"); if (f) f.focus({ preventScroll: true }); }
+    }
+  }
+  function showDesktop() {
+    const vis = W.filter((w) => w.state === "open");
+    if (vis.length) { hiddenByDesktop = vis; vis.forEach(minimize); }
+    else { hiddenByDesktop.forEach((w) => { if (w.state === "min") openWin(w); }); hiddenByDesktop = []; }
+  }
+  function tidy() {
+    W.forEach((w) => {
+      if (w.state !== "open") openWin(w, { quiet: true });
+      if (w.max) toggleMax(w);
+      resetPos(w, false);
+    });
+    W.forEach((w) => { w.el.style.zIndex = ""; });
+    zTop = 10; active = null; hiddenByDesktop = [];
+    W.forEach(markTask);
+  }
+
+  startBtn.addEventListener("click", (e) => setMenu(menu.hidden, e.detail === 0));
+  document.addEventListener("pointerdown", (e) => {
+    if (!menu.hidden && !menu.contains(e.target) && !startBtn.contains(e.target)) setMenu(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (menu.hidden) return;
+    if (e.key === "Escape") { setMenu(false); startBtn.focus(); return; }
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      const items = Array.from(menuList.querySelectorAll(".sm-item"));
+      const i = items.indexOf(document.activeElement);
+      const n = items[(i + (e.key === "ArrowDown" ? 1 : -1) + items.length) % items.length];
+      if (n) { e.preventDefault(); n.focus(); }
+    }
+  });
+
+  // top navigation buttons also bring back a minimized / closed window
+  document.querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener("click", () => {
+    const id = (a.getAttribute("href") || "").slice(1);
+    const w = id && W.find((x) => x.el.id === id);
+    if (w) { if (w.state !== "open") openWin(w); else focus(w); }
+  }));
+
+  // keep things sane on resize / when dragging becomes unavailable (phones)
+  if (canDragMQ.addEventListener) canDragMQ.addEventListener("change", () => { if (!canDragMQ.matches) W.forEach((w) => resetPos(w, false)); });
+  let rt;
+  window.addEventListener("resize", () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => W.forEach((w) => {
+      if (!w.tx && !w.ty) return;
+      const b = bounds(w);
+      setT(w, clamp(w.tx, b.minX, b.maxX), clamp(w.ty, b.minY, b.maxY));
+    }), 150);
+  });
+
+  // clock
+  function tick() {
+    const d = new Date();
+    clock.textContent = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    clock.title = d.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  }
+  tick(); setInterval(tick, 20000);
 })();
 </script>
 </body>
