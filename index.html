@@ -382,6 +382,7 @@ a:hover { color: var(--pink-deep); }
 .card-icon { font-size: 2rem; }
 .card h3 { margin: .2rem 0; color: var(--sky-deep); }
 .card p { margin: 0; font-size: 13px; }
+.card .card-tag { margin-top: .5rem; font-weight: bold; color: var(--pink-deep); }
 
 /* ===== Links & badges ===== */
 .linklist { list-style: none; padding: 0; margin: 0 0 1rem; }
@@ -840,20 +841,41 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
         <div class="window-body">
           <h2>✦ Projects ✦</h2>
           <div class="cards">
-            <a class="card" href="https://github.com/yourusername/project-one">
-              <div class="card-icon">💿</div>
-              <h3>Project One</h3>
-              <p>A short description of your first awesome project.</p>
+            <a class="card" href="https://pic-1.vercel.app/" target="_blank" rel="noopener">
+              <div class="card-icon">🛰️</div>
+              <h3>Lab in a Cube</h3>
+              <p>ESP32 communications with a simulated ground station (commands, telemetry, video) integrated with the AOCS of an educational PocketQube satellite. Awarded by Jerónimo Martins.</p>
+              <p class="card-tag">Website &rarr;</p>
             </a>
-            <a class="card" href="https://github.com/yourusername/project-two">
-              <div class="card-icon">🦋</div>
-              <h3>Project Two</h3>
-              <p>Another thing you made. Make it sound exciting!</p>
+            <a class="card" href="https://github.com/saraajp" target="_blank" rel="noopener">
+              <div class="card-icon">🧮</div>
+              <h3>Parameterized ALU in Verilog</h3>
+              <p>A scalable ALU with configurable operand widths, arithmetic and logic operations, comparisons and status flags, self-taught Verilog.</p>
+              <p class="card-tag">GitHub &rarr;</p>
             </a>
-            <a class="card" href="https://github.com/yourusername/project-three">
-              <div class="card-icon">🌐</div>
-              <h3>Project Three</h3>
-              <p>Your third project goes here. Add as many as you like.</p>
+            <a class="card" href="https://github.com/saraajp/Concurrent-Programming-Project" target="_blank" rel="noopener">
+              <div class="card-icon">🖼️</div>
+              <h3>Image Filter Applier</h3>
+              <p>Multithreaded C application for JPEG image processing, with thread synchronization to prevent race conditions.</p>
+              <p class="card-tag">GitHub &rarr;</p>
+            </a>
+            <a class="card" href="https://github.com/saraajp/Algorithms-and-Data-Structures-Project/tree/main" target="_blank" rel="noopener">
+              <div class="card-icon">🧭</div>
+              <h3>IST Navigate: The Infinite Loop of Doom</h3>
+              <p>C solution to a constrained grid-navigation problem with energy optimization and movement restrictions.</p>
+              <p class="card-tag">GitHub &rarr;</p>
+            </a>
+            <a class="card" href="https://github.com/saraajp/Reversi-Game" target="_blank" rel="noopener">
+              <div class="card-icon">⚫</div>
+              <h3>Reversi Game</h3>
+              <p>Terminal Reversi in C with a simple AI opponent, move undo and game-history export.</p>
+              <p class="card-tag">GitHub &rarr;</p>
+            </a>
+            <a class="card" href="https://github.com/saraajp/Kirby-Tuga" target="_blank" rel="noopener">
+              <div class="card-icon">🎮</div>
+              <h3>Kirby Tuga</h3>
+              <p>A goofy little game that is not to be taken seriously. Have fun!</p>
+              <p class="card-tag">GitHub &rarr;</p>
             </a>
           </div>
         </div>
@@ -1619,9 +1641,9 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
 // ---------------------------------------------------------------------------------------------
 (function () {
   const PHOTO_FOLDER = "photos/";
-  const PHOTO_COUNT = 12;
+  const PHOTO_COUNT = 3;
   const PHOTO_EXT = "jpg";
-  const PHOTO_EVERY_MINUTES = 1; // <-- how often the photo changes (60 = every hour, 30 = every half hour, 1440 = once a day)
+  const PHOTO_EVERY_MINUTES = 15; // <-- how often the photo changes (60 = every hour, 30 = every half hour, 1440 = once a day)
   const PHOTOS = [];
 
   const frame = document.getElementById("photoFrame");
