@@ -1636,6 +1636,23 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
   const HOUR = 3600000;
   const localMs = () => { const d = new Date(); return d.getTime() - d.getTimezoneOffset() * 60000; }; // wall-clock time of the visitor
   const hourIndex = () => Math.floor(localMs() / HOUR);
+  // Random order that is the same for everyone: photos are shuffled in rounds (every photo shows once
+  // per round, in a random order), and a round never starts with the photo the last round ended on.
+  function rnd(n) { let x = (n ^ 0x9e3779b9) >>> 0; x = Math.imul(x ^ (x >>> 16), 0x85ebca6b) >>> 0; x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35) >>> 0; return (x ^ (x >>> 16)) >>> 0; }
+  function round(r) {
+    const n = list.length, a = Array.from({ length: n }, (_, i) => i);
+    for (let i = n - 1; i > 0; i--) { const j = rnd(r * 1009 + i) % (i + 1); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+  function randomStart(hour) {
+    const n = list.length;
+    if (n < 2) return 0;
+    const r = Math.floor(hour / n), pos = hour - r * n;
+    if (n === 2) return pos; // just alternate
+    const a = round(r);
+    if (round(r - 1)[n - 1] === a[0]) [a[0], a[1]] = [a[1], a[0]]; // never repeat the previous round's last photo
+    return a[pos];
+  }
 
   let shown = null;
   function apply(src, caption, isCutout) {
@@ -1665,7 +1682,7 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
 
   function update() {
     if (!list.length) { useFallback(); return; }
-    pick(hourIndex() % list.length, 0, (idx) => {
+    pick(randomStart(hourIndex()), 0, (idx) => {
       if (idx === null) { useFallback(); return; }
       frame.hidden = false;
       apply(list[idx].src, list[idx].caption || "Pintas ♥", false);
