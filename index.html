@@ -337,6 +337,7 @@ a:hover { color: var(--pink-deep); }
   border: 3px solid #fff;
   box-shadow: 0 0 0 2px var(--silver-3), 0 4px 10px rgba(0,0,0,.25);
 }
+img.avatar { display: block; object-fit: cover; background: #fff; }
 .status { color: var(--lime-deep); font-weight: bold; }
 .dot {
   display: inline-block; width: 10px; height: 10px; border-radius: 50%;
@@ -778,8 +779,8 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
       <section class="window">
         <div class="titlebar"><span>profile.exe</span><span class="wbtns"><button type="button" class="wb wb-min" aria-label="Minimize window" title="Minimize">_</button><button type="button" class="wb wb-max" aria-label="Maximize window" title="Maximize">□</button><button type="button" class="wb wb-close" aria-label="Close window" title="Close">×</button></span></div>
         <div class="window-body center">
-          <div class="avatar" role="img" aria-label="Profile picture placeholder">:)</div>
-          <p><b>YOUR NAME</b><br>Somewhere, Earth</p>
+          <img class="avatar" src="photos/me.png" alt="Sara Pereira">
+          <p><b>Sara Pereira</b><br>Delft, Netherlands</p>
           <p class="status"><span class="dot"></span> online</p>
         </div>
       </section>
