@@ -17,7 +17,7 @@
       if (t && window.Y2K_THEMES[t]) document.documentElement.setAttribute("data-theme", t);
     } catch (e) {}
   </script>
-  <title>Sara WebCave</title>
+  <title>Sara's WebCave</title>
   <meta name="description" content="Welcome to my personal corner of the web.">
   <link rel="preconnect" href="https://abacus.jasoncameron.dev" crossorigin>
   <script>
@@ -767,12 +767,13 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
       <span>★ WELCOME TO MY WEBCAVE ★ THANKS FOR VISITING ★</span>
       <span>★ WELCOME TO MY WEBCAVE ★ THANKS FOR VISITING ★</span>
       <span>★ WELCOME TO MY WEBCAVE ★ THANKS FOR VISITING ★</span>
+      <span>★ WELCOME TO MY WEBCAVE ★ THANKS FOR VISITING ★</span>
     </div>
   </div>
 
   <header class="hero">
     <div class="orb-field" id="orbField"></div>
-    <h1 class="chrome-text">Sara WebCave</h1>
+    <h1 class="chrome-text">Sara's WebCave</h1>
     <p class="tagline">~ developer / designer / digital dreamer ~</p>
     <nav class="nav">
       <a class="bubble-btn" href="#about">About</a>
@@ -1180,13 +1181,14 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
   if (!stage || !btn) return;
 
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const NOISES = ["prrr~", "mrrp!", "purrrr \u2665", "nyaa~", "more pls!", "mrrrow \u2665"];
+  const NOISES = ["prrr~", "mrrp!", "purrrr \u2665", "mrrrow \u2665"];
   const MILESTONES = {
     1: "Pintas is purring...",
     10: "He's melting \u2665",
     25: "Pintas has fallen in love with you",
     50: "Okay, that's a LOT of pets",
-    100: "Legendary petter!"
+    100: "Legendary petter!",
+    9000: "It's over 9000!",
   };
 
   const photo = btn.querySelector("img");
@@ -1290,23 +1292,22 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
     ["yes", "Pintas says yes"],
     ["yes", "Definitely. He blinked slowly, which means yes"],
     ["yes", "Without a doubt (treats are involved)"],
-    ["yes", "Yes, and he'd like a snack to celebrate"],
     ["yes", "Most likely, if you pet him first"],
     ["yes", "All signs point to yes"],
     ["yes", "Pintas approves ♥"],
     ["maybe", "Ask again after a nap"],
     ["maybe", "Pintas is busy staring at a wall"],
-    ["maybe", "Cannot predict now, he's chasing a dot"],
+    ["maybe", "Cannot predict now, he's chasing a fly"],
     ["maybe", "Concentrate and ask again"],
     ["maybe", "Pintas pretends he didn't hear that"],
     ["maybe", "Better not tell you now"],
-    ["maybe", "Reply hazy, try again after dinner"],
+    ["maybe", "Try again after dinner"],
     ["no", "Pintas says no"],
     ["no", "Very doubtful"],
     ["no", "He knocked that off the table. So, no"],
-    ["no", "My sources (the cat) say no"],
     ["no", "Outlook not so good"],
-    ["no", "Nope. Hiss."]
+    ["no", "Nope, and he just walked away"],
+    ["no", "Pintas is ignoring you. That's a no"]
   ];
 
   let busy = false, last = -1;
