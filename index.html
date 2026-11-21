@@ -758,6 +758,23 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
 }
 
 </style>
+  <script>
+    // ===== VISITOR STATS (GoatCounter: free, no cookies, shows visits, countries and referrers) =====
+    // 1) Sign up at https://www.goatcounter.com (free for personal sites) and pick a site code, e.g. "saracave".
+    // 2) Put that code below (just the code, not the full address). Leave it empty to turn stats off.
+    // 3) Your dashboard will be at https://YOURCODE.goatcounter.com
+    var GOATCOUNTER_CODE = "";
+    (function () {
+      if (!GOATCOUNTER_CODE) return;
+      var h = location.hostname;
+      if (!h || h === "localhost" || h === "127.0.0.1") return; // don't count your own testing
+      var s = document.createElement("script");
+      s.async = true;
+      s.src = "https://gc.zgo.at/count.js";
+      s.setAttribute("data-goatcounter", "https://" + GOATCOUNTER_CODE + ".goatcounter.com/count");
+      document.head.appendChild(s);
+    })();
+  </script>
 </head>
 <body>
 
