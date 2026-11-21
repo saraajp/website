@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="sky">
+<html lang="en" data-theme="cyber">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,7 +17,7 @@
       if (t && window.Y2K_THEMES[t]) document.documentElement.setAttribute("data-theme", t);
     } catch (e) {}
   </script>
-  <title>Sara Cave</title>
+  <title>Sara WebCave</title>
   <meta name="description" content="Welcome to my personal corner of the web.">
   <link rel="preconnect" href="https://abacus.jasoncameron.dev" crossorigin>
   <script>
@@ -764,14 +764,15 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
   <!-- Scrolling banner -->
   <div class="ticker" aria-hidden="true">
     <div class="ticker-track">
-      <span>★ WELCOME TO MY HOMEPAGE ★ BEST VIEWED AT 1024x768 ★ SIGN MY GUESTBOOK ★ THANKS FOR VISITING ★</span>
-      <span>★ WELCOME TO MY HOMEPAGE ★ BEST VIEWED AT 1024x768 ★ SIGN MY GUESTBOOK ★ THANKS FOR VISITING ★</span>
+      <span>★ WELCOME TO MY WEBCAVE ★ THANKS FOR VISITING ★</span>
+      <span>★ WELCOME TO MY WEBCAVE ★ THANKS FOR VISITING ★</span>
+      <span>★ WELCOME TO MY WEBCAVE ★ THANKS FOR VISITING ★</span>
     </div>
   </div>
 
   <header class="hero">
     <div class="orb-field" id="orbField"></div>
-    <h1 class="chrome-text">Sara</h1>
+    <h1 class="chrome-text">Sara WebCave</h1>
     <p class="tagline">~ developer / designer / digital dreamer ~</p>
     <nav class="nav">
       <a class="bubble-btn" href="#about">About</a>
@@ -827,16 +828,16 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
           <p style="margin:0"><b>Display Properties</b></p>
           <p class="dp-sub">Wallpaper + cursor + sparkles</p>
           <div class="theme-grid" role="radiogroup" aria-label="Theme: wallpaper and cursor">
-            <button type="button" role="radio" class="theme-opt" data-theme-pick="sky" aria-checked="true"
+            <button type="button" role="radio" class="theme-opt" data-theme-pick="sky" aria-checked="false"
               style="--a:#b9e6ff;--b:#ffd6f1;--c1:#8fd3ff;--c2:#3a9be8"><span class="swatch"></span><span class="tlabel">Sky Bubble</span></button>
             <button type="button" role="radio" class="theme-opt" data-theme-pick="bubblegum" aria-checked="false"
               style="--a:#ffcfe9;--b:#f1d4ff;--c1:#ff9bdc;--c2:#f0399f"><span class="swatch"></span><span class="tlabel">Bubblegum</span></button>
-            <button type="button" role="radio" class="theme-opt" data-theme-pick="cyber" aria-checked="false"
+            <button type="button" role="radio" class="theme-opt" data-theme-pick="cyber" aria-checked="true"
               style="--a:#131824;--b:#2a3447;--c1:#5cf0ff;--c2:#0a8fb0"><span class="swatch"></span><span class="tlabel">Cyber Silver</span></button>
             <button type="button" role="radio" class="theme-opt" data-theme-pick="lime" aria-checked="false"
               style="--a:#d9ffa8;--b:#fff2b5;--c1:#a8f26a;--c2:#3fa80f"><span class="swatch"></span><span class="tlabel">Lime Green</span></button>
           </div>
-          <p class="dp-note" id="themeNote" role="status" aria-live="polite">Theme: Sky Bubble</p>
+          <p class="dp-note" id="themeNote" role="status" aria-live="polite">Theme: Cyber Silver</p>
         </div>
       </section>
     </aside>
@@ -1263,7 +1264,7 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
     if (save) { try { localStorage.setItem("y2kTheme", key); } catch (e) {} }
   }
 
-  apply(root.getAttribute("data-theme") || "sky", false);
+  apply(root.getAttribute("data-theme") || "cyber", false);
   opts.forEach((o, i) => {
     o.addEventListener("click", () => apply(o.dataset.themePick, true));
     o.addEventListener("keydown", (e) => {
