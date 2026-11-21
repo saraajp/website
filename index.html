@@ -1019,7 +1019,7 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
   </main>
 
   <footer class="footer">
-    <p>★ © 2000 — <span id="year">2026</span> YOUR NAME ★ Last updated: <span id="updated">today</span> ★</p>
+    <p>★ Last updated: <span id="updated">today</span> ★</p>
     <p class="construction">🚧 This site is always under construction 🚧</p>
   </footer>
 
@@ -1040,7 +1040,27 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
   <script>
 // Footer year + "last updated" date
 document.getElementById("year").textContent = new Date().getFullYear();
-document.getElementById("updated").textContent = new Date().toLocaleDateString("en-GB");
+// "Last updated": the date of your latest change on GitHub, found automatically (no editing needed).
+(function () {
+  var REPO = "saraajp/saraajp.github.io"; // your repo; only change this if you rename it
+  var el = document.getElementById("updated");
+  if (!el) return;
+  var fmt = function (d) { return isNaN(d) ? "" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }); };
+  var KEY = "lastUpdated";
+  var show = function (s) { if (s) el.textContent = s; };
+  try { show(localStorage.getItem(KEY)); } catch (e) {}           // show the last known date instantly
+  show(fmt(new Date(document.lastModified)));                      // fallback: when this page file was last served
+  if (!window.fetch) return;
+  fetch("https://api.github.com/repos/" + REPO)
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+    .then(function (j) {
+      var s = fmt(new Date(j.pushed_at));
+      if (!s) return;
+      show(s);
+      try { localStorage.setItem(KEY, s); } catch (e) {}
+    })
+    .catch(function () {});
+})();
 
 // Visitor counter display: your locked number shows instantly; spinning digits only while a new number is fetched.
 (function () {
