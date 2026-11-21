@@ -346,6 +346,14 @@ img.avatar { display: block; object-fit: cover; background: #fff; }
   box-shadow: 0 0 0 1px var(--silver-3), 0 3px 6px rgba(0,0,0,.25);
   transition: transform .15s, filter .15s;
 }
+.social { flex-wrap: wrap; align-items: center; }
+.social a.cv-btn {
+  width: auto; height: auto; border-radius: 999px; padding: .35rem 1.1rem; margin-top: .2rem;
+  font-weight: bold; font-size: 13px; text-decoration: none; color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,.4);
+  background: linear-gradient(180deg, var(--lime), var(--lime-deep));
+}
+.social a.cv-btn:hover, .social a.cv-btn:focus-visible { color: #fff; }
 .social a:nth-child(2) { background: linear-gradient(180deg, var(--pink), var(--pink-deep)); }
 .social a:hover, .social a:focus-visible { transform: translateY(-2px) scale(1.08); filter: brightness(1.1); color: #fff; }
 .status { color: var(--lime-deep); font-weight: bold; }
@@ -686,6 +694,25 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
   box-shadow: 0 0 0 1px var(--silver-3), 6px 8px 0 var(--win-shadow), 0 14px 30px rgba(0,0,0,.35);
 }
 .startmenu[hidden] { display: none; }
+.binmenu { left: auto; right: 8px; width: min(280px, calc(100vw - 16px)); }
+.bin {
+  position: relative; flex: none; height: 34px; min-width: 38px; padding: 0 8px; font: inherit; font-size: 17px; line-height: 1;
+  border: 1px solid #8a9bb2; border-radius: 8px; background: linear-gradient(180deg, #fff, #c9d6e8);
+  box-shadow: 0 1px 2px rgba(0,0,0,.2); user-select: none; -webkit-user-select: none;
+}
+.bin .bin-ico { display: inline-block; opacity: .6; }
+.bin.is-full .bin-ico { opacity: 1; }
+.bin[aria-expanded="true"] { box-shadow: inset 0 2px 4px rgba(0,0,0,.3); }
+.bin:focus-visible { outline: 2px dashed var(--pink-deep); outline-offset: 2px; }
+.bin-count {
+  position: absolute; top: -7px; right: -7px; min-width: 18px; height: 18px; padding: 0 4px; display: grid; place-items: center;
+  font-size: 11px; font-weight: bold; line-height: 1; color: #fff; border: 1px solid #fff; border-radius: 9px;
+  background: var(--pink-deep); box-shadow: 0 1px 3px rgba(0,0,0,.35);
+}
+.bin-count[hidden] { display: none; }
+.bin.wiggle .bin-ico { animation: bin-wiggle .45s ease-in-out; }
+@keyframes bin-wiggle { 20% { transform: rotate(-18deg) scale(1.2); } 50% { transform: rotate(14deg) scale(1.2); } 80% { transform: rotate(-6deg); } }
+.sm-empty { padding: .6rem; font-size: 12px; text-align: center; opacity: .75; }
 .sm-side {
   flex: none; width: 34px; display: flex; align-items: center;
   background: linear-gradient(0deg, var(--tb3), var(--tb1)); color: #fff;
@@ -763,7 +790,7 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
     // 1) Sign up at https://www.goatcounter.com (free for personal sites) and pick a site code, e.g. "saracave".
     // 2) Put that code below (just the code, not the full address). Leave it empty to turn stats off.
     // 3) Your dashboard will be at https://YOURCODE.goatcounter.com
-    var GOATCOUNTER_CODE = "saracave";
+    var GOATCOUNTER_CODE = "";
     (function () {
       if (!GOATCOUNTER_CODE) return;
       var h = location.hostname;
@@ -817,6 +844,7 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
             <a href="https://www.linkedin.com/in/sara-pereira-7a547a369/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
               <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
             </a>
+            <a class="cv-btn" href="cv.pdf" download="Sara_Pereira_CV.pdf">Download my CV</a>
           </div>
         </div>
       </section>
@@ -998,10 +1026,14 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
   <nav class="taskbar" id="taskbar" aria-label="Taskbar">
     <button type="button" class="bubble-btn start-btn" id="startBtn" aria-haspopup="true" aria-expanded="false" aria-controls="startMenu">★ start</button>
     <div class="tasks" id="tasks" role="toolbar" aria-label="Open windows"></div>
+    <button type="button" class="bin" id="binBtn" aria-haspopup="true" aria-expanded="false" aria-controls="binMenu" title="Recycle Bin" aria-label="Recycle Bin, empty"><span class="bin-ico" aria-hidden="true">&#128465;&#65039;</span><span class="bin-count" id="binCount" hidden>0</span></button>
     <div class="tray" id="clock">--:--</div>
     <div class="startmenu" id="startMenu" role="menu" aria-label="Start menu" hidden>
       <div class="sm-side" aria-hidden="true"><span>Y2K OS</span></div>
       <div class="sm-list" id="smList"></div>
+    </div>
+    <div class="startmenu binmenu" id="binMenu" role="menu" aria-label="Recycle Bin" hidden>
+      <div class="sm-list" id="binList"></div>
     </div>
   </nav>
 
@@ -1366,7 +1398,11 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
   const menu = document.getElementById("startMenu");
   const menuList = document.getElementById("smList");
   const clock = document.getElementById("clock");
-  if (!els.length || !tasksEl || !startBtn || !menu || !menuList) return;
+  const binBtn = document.getElementById("binBtn");
+  const binMenu = document.getElementById("binMenu");
+  const binList = document.getElementById("binList");
+  const binCount = document.getElementById("binCount");
+  if (!els.length || !binBtn || !binMenu || !binList || !tasksEl || !startBtn || !menu || !menuList) return;
 
   document.documentElement.classList.add("has-desktop");
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1381,7 +1417,7 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
     const vacant = w.state !== "open" || w.max || moved(w);
     w.slot.classList.toggle("vacant", vacant);
     if (vacant) {
-      const msg = w.state === "closed" ? "closed · click to reopen"
+      const msg = w.state === "closed" ? "in the Recycle Bin · click to restore"
         : w.state === "min" ? "minimized · click to restore"
         : w.max ? "maximized · click to restore" : "moved · click to put back";
       if (w.ghost.dataset.msg !== msg) {
@@ -1395,9 +1431,18 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
     w.task.hidden = w.state === "closed";
     w.task.classList.toggle("is-min", w.state === "min");
     markTask(w);
+    updateBin();
     w.bMax.textContent = w.max ? "▣" : "□";
     w.bMax.setAttribute("aria-label", w.max ? "Restore window" : "Maximize window");
     w.bMax.title = w.max ? "Restore" : "Maximize";
+  }
+  function updateBin() {
+    const n = W.filter((x) => x.state === "closed").length;
+    binCount.hidden = !n;
+    binCount.textContent = n;
+    binBtn.classList.toggle("is-full", n > 0);
+    binBtn.setAttribute("aria-label", "Recycle Bin, " + (n ? n + (n === 1 ? " item" : " items") : "empty"));
+    if (!binMenu.hidden) renderBin();
   }
   function markTask(w) { w.task.setAttribute("aria-pressed", String(active === w && w.state === "open")); }
 
@@ -1421,8 +1466,8 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
     W.forEach(markTask);
   }
 
-  function fly(w) { // set the offset from the window to its taskbar button (for the shrink / grow animation)
-    const r = w.el.getBoundingClientRect(), t = w.task.getBoundingClientRect();
+  function fly(w, target) { // set the offset from the window to its taskbar button (or the bin) for the shrink / grow animation
+    const r = w.el.getBoundingClientRect(), t = (target || w.task).getBoundingClientRect();
     w.el.style.setProperty("--dx", (t.left + t.width / 2) - (r.left + r.width / 2) + "px");
     w.el.style.setProperty("--dy", (t.top + t.height / 2) - (r.top + r.height / 2) + "px");
   }
@@ -1451,8 +1496,9 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
     stopAnim(w);
     w.state = "closed";
     if (active === w) active = null;
-    sync(w);
-    play(w, "win-close", 180, () => w.el.classList.add("is-hidden"));
+    fly(w, binBtn); sync(w);
+    play(w, "win-min", 260, () => w.el.classList.add("is-hidden"));
+    if (!reduce) { binBtn.classList.remove("wiggle"); void binBtn.offsetWidth; setTimeout(() => binBtn.classList.add("wiggle"), 200); }
   }
   function reveal(w) { // scroll so the window is on screen (measured at its resting place, not mid-animation)
     if (w.max) return;
@@ -1465,11 +1511,11 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
     o = o || {};
     if (w.state !== "open") {
       stopAnim(w);
-      const fromMin = w.state === "min";
-      if (fromMin && !o.quiet) fly(w);
+      const fromMin = w.state === "min", fromBin = w.state === "closed";
+      if ((fromMin || fromBin) && !o.quiet) fly(w, fromBin ? binBtn : w.task);
       w.state = "open";
       w.el.classList.remove("is-hidden");
-      if (!o.quiet) play(w, fromMin ? "win-open" : "win-pop", 240);
+      if (!o.quiet) play(w, fromMin || fromBin ? "win-open" : "win-pop", 240);
     }
     focus(w); sync(w);
     if (o.scroll) reveal(w);
@@ -1584,12 +1630,49 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
       menuList.appendChild(b);
     };
     add("sm-head", "Programs");
-    W.forEach((w) => item(w.title, w.state === "closed" ? "closed" : w.state === "min" ? "minimized" : "", () => openWin(w, { scroll: true })));
+    W.forEach((w) => item(w.title, w.state === "closed" ? "in Recycle Bin" : w.state === "min" ? "minimized" : "", () => openWin(w, { scroll: true })));
     add("sm-sep");
     item("Show desktop", "", showDesktop);
     item("Tidy up windows", "", tidy);
   }
+  function renderBin() {
+    binList.textContent = "";
+    const bin = W.filter((w) => w.state === "closed");
+    const head = document.createElement("div"); head.className = "sm-head"; head.textContent = "Recycle Bin";
+    binList.appendChild(head);
+    if (!bin.length) {
+      const e = document.createElement("div"); e.className = "sm-empty"; e.textContent = "The Recycle Bin is empty. Close a window to put it here!";
+      binList.appendChild(e);
+      return;
+    }
+    const item = (label, hint, fn) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "sm-item"; b.setAttribute("role", "menuitem");
+      const a = document.createElement("span"); a.textContent = label;
+      const s = document.createElement("span"); s.className = "sm-state"; s.textContent = hint;
+      b.append(a, s);
+      b.addEventListener("click", fn);
+      binList.appendChild(b);
+      return b;
+    };
+    bin.forEach((w) => item(w.title, "restore", () => { if (bin.length === 1) setBin(false); openWin(w, { scroll: true }); }));
+    if (bin.length > 1) {
+      const sep = document.createElement("div"); sep.className = "sm-sep"; binList.appendChild(sep);
+      item("Restore all", "", () => { setBin(false); bin.forEach((w, i) => openWin(w, { scroll: i === 0 })); });
+    }
+  }
+  function setBin(open, focusFirst) {
+    binMenu.hidden = !open;
+    binBtn.setAttribute("aria-expanded", String(open));
+    if (open) {
+      if (!menu.hidden) setMenu(false);
+      renderBin();
+      binMenu.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+      if (focusFirst) { const f = binList.querySelector(".sm-item"); if (f) f.focus({ preventScroll: true }); }
+    }
+  }
   function setMenu(open, focusFirst) {
+    if (open && !binMenu.hidden) setBin(false);
     menu.hidden = !open;
     startBtn.setAttribute("aria-expanded", String(open));
     if (open) {
@@ -1615,6 +1698,20 @@ document.getElementById("updated").textContent = new Date().toLocaleDateString("
   }
 
   startBtn.addEventListener("click", (e) => setMenu(menu.hidden, e.detail === 0));
+  binBtn.addEventListener("click", (e) => setBin(binMenu.hidden, e.detail === 0));
+  document.addEventListener("pointerdown", (e) => {
+    if (!binMenu.hidden && !binMenu.contains(e.target) && !binBtn.contains(e.target)) setBin(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (binMenu.hidden) return;
+    if (e.key === "Escape") { setBin(false); binBtn.focus(); return; }
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      const items = Array.from(binList.querySelectorAll(".sm-item"));
+      const i = items.indexOf(document.activeElement);
+      const n = items[(i + (e.key === "ArrowDown" ? 1 : -1) + items.length) % items.length];
+      if (n) { e.preventDefault(); n.focus(); }
+    }
+  });
   document.addEventListener("pointerdown", (e) => {
     if (!menu.hidden && !menu.contains(e.target) && !startBtn.contains(e.target)) setMenu(false);
   });
